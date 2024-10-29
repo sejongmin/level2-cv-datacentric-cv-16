@@ -5,6 +5,7 @@
 /dataset
 /work_dirs
 /code
+/bbox_results
 *.csv
 
 # Byte-compiled / optimized / DLL files
