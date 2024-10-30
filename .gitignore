@@ -4,7 +4,12 @@
 /baseline
 /dataset
 /work_dirs
-/code
+
+model.py
+loss.py
+east_dataset.py
+detect.py
+*.pth
 *.csv
 
 # Byte-compiled / optimized / DLL files
