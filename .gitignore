@@ -4,11 +4,15 @@
 /baseline
 /dataset
 /work_dirs
-/code
 /bbox_results
 /ufo_to_datumaro/annotations
 /ufo_to_datumaro/annotations_backup
 /ufo_to_datumaro/zip
+model.py
+loss.py
+east_dataset.py
+detect.py
+*.pth
 *.csv
 
 # Byte-compiled / optimized / DLL files
