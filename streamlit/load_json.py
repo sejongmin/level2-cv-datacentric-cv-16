@@ -34,6 +34,16 @@ def load_df(json_path='./code/data/chinese_receipt/ufo/train.json'):
             image_heights.append(image_value['img_h'])
             image_widths.append(image_value['img_w'])
             transcriptions.append(word['transcription'])
+            if not word['points']:
+                x1.append("")
+                y1.append("")
+                x2.append("")
+                y2.append("")
+                x3.append("")
+                y3.append("")
+                x4.append("")
+                y4.append("")
+                continue
             x1.append(float(word['points'][0][0]))
             y1.append(float(word['points'][0][1]))
             x2.append(float(word['points'][1][0]))
@@ -57,16 +67,4 @@ def load_df(json_path='./code/data/chinese_receipt/ufo/train.json'):
     train_df['x4'] = x4
     train_df['y4'] = y4
 
-    bbox_df = pd.DataFrame()
-    bbox_df['word_ids'] = train_df['word_ids'].values
-    bbox_df['transcriptions'] = train_df['transcriptions'].values
-    bbox_df['x1'] = train_df['x1'].values
-    bbox_df['y1'] = train_df['y1'].values
-    bbox_df['x2'] = train_df['x2'].values
-    bbox_df['y2'] = train_df['y2'].values
-    bbox_df['x3'] = train_df['x3'].values
-    bbox_df['y3'] = train_df['y3'].values
-    bbox_df['x4'] = train_df['x4'].values
-    bbox_df['y4'] = train_df['y4'].values
-
-    return train_df, bbox_df
+    return train_df
