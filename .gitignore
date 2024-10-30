@@ -6,6 +6,9 @@
 /work_dirs
 /code
 /bbox_results
+/ufo_to_datumaro/annotations
+/ufo_to_datumaro/annotations_backup
+/ufo_to_datumaro/zip
 *.csv
 
 # Byte-compiled / optimized / DLL files
