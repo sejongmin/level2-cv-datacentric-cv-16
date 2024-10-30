@@ -8,14 +8,27 @@ def create_json_without_(ufo_path: str, output_path: str, key: str=""):
     with Path(ufo_path).open(encoding='utf8') as f:
         ufo_data = json.load(f)
         
-    print(type(ufo_data))
-    print(ufo_data.keys())
-    print(ufo_data['images'].keys())
-    print(ufo_data['images']['extractor.vi.in_house.appen_001105_page0001.jpg'].keys())
-    print(ufo_data['images']['extractor.vi.in_house.appen_001105_page0001.jpg']['words'].keys())
-    print(ufo_data['images']['extractor.vi.in_house.appen_001105_page0001.jpg']['words']['0001'].keys())
-    print(ufo_data['images']['extractor.vi.in_house.appen_001105_page0001.jpg']['words']['0001']['transcription'])
+    # print(type(ufo_data))
+    # print(ufo_data.keys())
+    # print(ufo_data['images'].keys())
+    # print(ufo_data['images']['extractor.vi.in_house.appen_001105_page0001.jpg'].keys())
+    # print(ufo_data['images']['extractor.vi.in_house.appen_001105_page0001.jpg']['words'].keys())
+    # print(ufo_data['images']['extractor.vi.in_house.appen_001105_page0001.jpg']['words']['0001'].keys())
+    # print(ufo_data['images']['extractor.vi.in_house.appen_001105_page0001.jpg']['words']['0001']['transcription'])
+
+    # del ufo_data['images']['extractor.vi.in_house.appen_001105_page0001.jpg']['words']['0001']
+    # print(ufo_data['images']['extractor.vi.in_house.appen_001105_page0001.jpg']['words'].keys())
     
+    img_files = ufo_data['images'].keys()
+    
+    
+    for img in img_files:
+        print(img)
+        raise
+        
+        for bboxs, values in v['words'].items():
+            if bboxs['trans']:
+                pass
     
 
 if __name__=="__main__":
