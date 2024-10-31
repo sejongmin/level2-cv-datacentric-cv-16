@@ -35,7 +35,7 @@ def parse_args():
     parser.add_argument('--max_epoch', type=int, default=150)
     parser.add_argument('--save_interval', type=int, default=5)
     
-    args = parser.parse_args()
+    args = parser.parse_arsgs()
 
     if args.input_size % 32 != 0:
         raise ValueError('`input_size` must be a multiple of 32')
@@ -48,6 +48,7 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
     dataset = SceneTextDataset(
         data_dir,
         split='train',
+        _lang_list=['chinese', 'japanese', 'thai', 'vietnamese'],
         image_size=image_size,
         crop_size=input_size,
     )
