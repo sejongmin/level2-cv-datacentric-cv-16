@@ -337,13 +337,14 @@ def filter_vertices(vertices, labels, ignore_under=0, drop_under=0):
 class SceneTextDataset(Dataset):
     def __init__(self, root_dir,
                  split='train',
+                 _lang_list = ['chinese', 'japanese', 'thai', 'vietnamese'],
                  image_size=2048,
                  crop_size=1024,
                  ignore_under_threshold=10,
                  drop_under_threshold=1,
                  color_jitter=True,
                  normalize=True):
-        self._lang_list = ['chinese', 'japanese', 'thai', 'vietnamese']
+        self._lang_list = _lang_list
         self.root_dir = root_dir
         self.split = split
         total_anno = dict(images=dict())
