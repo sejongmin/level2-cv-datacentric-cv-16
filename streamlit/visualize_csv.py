@@ -10,24 +10,29 @@ def draw_bbox(image, coordinates, color=(0, 255, 0), thickness=2):
         cv2.line(image, start_point, end_point, color, thickness)
 
 def show(df, image_ids):
-    color = (56, 208, 78)
+    color = (208, 56, 78)
+    nation_dict = {
+        'vi': 'vietnamese_receipt',
+        'th': 'thai_receipt',
+        'zh': 'chinese_receipt',
+        'ja': 'japanese_receipt',
+    }
     cols = st.columns(len(image_ids))
     
     for i, image_id in enumerate(image_ids):
         image_data = df[df['image_id'] == image_id]
-        
-        image = cv2.imread(base_path + image_id)
+        receipt = nation_dict.get(image_id.split('.')[1])
+        image = cv2.imread(f'data/{receipt}/img/test/' + image_id)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        display_w, display_h = image.shape[1], image.shape[0]
         for _, row in image_data.iterrows():
+            print(row)
             try:
-                img_w, img_h = row['img_w'], row['img_h']
                 scaled_coordinates = [
-                    int(row['x1'] * display_w / img_w), int(row['y1'] * display_h / img_h),
-                    int(row['x2'] * display_w / img_w), int(row['y2'] * display_h / img_h),
-                    int(row['x3'] * display_w / img_w), int(row['y3'] * display_h / img_h),
-                    int(row['x4'] * display_w / img_w), int(row['y4'] * display_h / img_h)
+                    int(row['x1']), int(row['y1']),
+                    int(row['x2']), int(row['y2']),
+                    int(row['x3']), int(row['y3']),
+                    int(row['x4']), int(row['y4'])
                 ]
                 draw_bbox(image, scaled_coordinates, color=color, thickness=2)
             except Exception as e:
