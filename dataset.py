@@ -250,7 +250,7 @@ def rotate_all_pixels(rotate_mat, anchor_x, anchor_y, length):
     y_lin = y.reshape((1, x.size))
     coord_mat = np.concatenate((x_lin, y_lin), 0)
     rotated_coord = np.dot(rotate_mat, coord_mat - np.array([[anchor_x], [anchor_y]])) + \
-                                                   np.array([[anchor_x], [anchor_y]])
+                                                    np.array([[anchor_x], [anchor_y]])
     rotated_x = rotated_coord[0, :].reshape(x.shape)
     rotated_y = rotated_coord[1, :].reshape(y.shape)
     return rotated_x, rotated_y
@@ -336,13 +336,13 @@ def filter_vertices(vertices, labels, ignore_under=0, drop_under=0):
 
 class SceneTextDataset(Dataset):
     def __init__(self, root_dir,
-                 split='train',
-                 image_size=2048,
-                 crop_size=1024,
-                 ignore_under_threshold=10,
-                 drop_under_threshold=1,
-                 color_jitter=True,
-                 normalize=True):
+                split='train',
+                image_size=2048,
+                crop_size=1024,
+                ignore_under_threshold=10,
+                drop_under_threshold=1,
+                color_jitter=True,
+                normalize=True):
         self._lang_list = ['chinese', 'japanese', 'thai', 'vietnamese']
         self.root_dir = root_dir
         self.split = split
@@ -399,10 +399,16 @@ class SceneTextDataset(Dataset):
         )
 
         image = Image.open(image_fpath)
-        image, vertices = resize_img(image, vertices, self.image_size)
-        image, vertices = adjust_height(image, vertices)
-        image, vertices = rotate_img(image, vertices)
-        image, vertices = crop_img(image, vertices, labels, self.crop_size)
+        prob = 0.5
+
+        if np.random.rand() < prob:
+            image, vertices = resize_img(image, vertices, self.image_size)
+        if np.random.rand() < prob:
+            image, vertices = adjust_height(image, vertices)
+        if np.random.rand() < prob:
+            image, vertices = rotate_img(image, vertices)
+        if np.random.rand() < prob:
+            image, vertices = crop_img(image, vertices, labels, self.crop_size)
 
         if image.mode != 'RGB':
             image = image.convert('RGB')

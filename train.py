@@ -2,6 +2,7 @@ import os
 import os.path as osp
 import time
 import math
+import numpy as np
 from datetime import timedelta
 from argparse import ArgumentParser
 
@@ -14,7 +15,7 @@ from tqdm import tqdm
 from east_dataset import EASTDataset
 from dataset import SceneTextDataset
 from model import EAST
-
+np.random.seed(16)
 
 def parse_args():
     parser = ArgumentParser()
