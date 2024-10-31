@@ -10,6 +10,7 @@ import albumentations as A
 from torch.utils.data import Dataset
 from shapely.geometry import Polygon
 from numba import njit
+A.seed_everything(16)
 
 @njit
 def cal_distance(x1, y1, x2, y2):
