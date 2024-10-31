@@ -14,7 +14,7 @@ def show(df, image_ids, json_path):
         color = (208, 56, 78)
         cols = st.columns(len(image_ids))
         json_path = json_path.split('/')
-        mode = json_path[-1].split('.')[0]
+        mode = "test" if json_path[-1].split('.')[0] == "test" else "train"
 
         for i, image_id in enumerate(image_ids):
             image_data = df[df['image_id'] == image_id]

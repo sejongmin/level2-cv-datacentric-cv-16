@@ -65,5 +65,4 @@ def load_df(json_like_csv_path='./code/data/chinese_receipt/ufo/train.csv'):
     df['x4'] = x4
     df['y4'] = y4
 
-    print(df)
     return df
