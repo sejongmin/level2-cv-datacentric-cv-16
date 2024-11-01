@@ -1,0 +1,288 @@
+import sys, os
+import os.path as osp
+import time
+import math
+from datetime import timedelta
+from argparse import ArgumentParser
+
+import torch
+from torch import cuda
+from torch.utils.data import DataLoader
+from torch.optim import lr_scheduler
+from tqdm import tqdm
+
+from east_dataset import EASTDataset
+from dataset import SceneTextDataset
+from model import EAST
+from logger_sweep import WandbLogger
+
+import wandb
+
+def parse_args():
+    parser = ArgumentParser()
+
+    # Conventional args
+    parser.add_argument('--data_dir', type=str,
+                        default=os.environ.get('SM_CHANNEL_TRAIN', 'data'))
+    parser.add_argument('--model_dir', type=str, default=os.environ.get('SM_MODEL_DIR',
+                                                                        'trained_models'))
+    parser.add_argument('--device', default='cuda' if cuda.is_available() else 'cpu')
+    parser.add_argument('--num_workers', type=int, default=8)
+
+    # Model args
+    parser.add_argument('--image_size', type=int, default=2048)
+    parser.add_argument('--input_size', type=int, default=1024)
+    parser.add_argument('--batch_size', type=int, default=8)
+    parser.add_argument('--learning_rate', type=float, default=1e-3)
+    parser.add_argument('--max_epoch', type=int, default=150)
+    parser.add_argument('--save_interval', type=int, default=5)
+
+    # Optimizer and scheduler args
+    parser.add_argument('--optimizer_type', type=str, default='adamw')
+    parser.add_argument('--weight_decay', type=float, default=0.01)
+    parser.add_argument('--momentum', type=float, default=0.9)
+    parser.add_argument('--nesterov', type=bool, default=False)
+    parser.add_argument('--scheduler_type', type=str, default='cosine')
+    parser.add_argument('--eta_min', type=float, default=1e-6)
+    parser.add_argument('--pct_start', type=float, default=0.3)
+
+    # Loss weights
+    parser.add_argument('--cls_loss_weight', type=float, default=1.0)
+    parser.add_argument('--angle_loss_weight', type=float, default=1.0)
+    parser.add_argument('--iou_loss_weight', type=float, default=1.0)
+
+    # Wandb args
+    parser.add_argument('--wandb_run_name', type=str, default=None)
+
+    args = parser.parse_args()
+
+    if args.input_size % 32 != 0:
+        raise ValueError('`input_size` must be a multiple of 32')
+
+    return args
+
+def get_optimizer(opt_name, model_params, lr, weight_decay, **kwargs):
+    if opt_name == 'adam':
+        return torch.optim.Adam(model_params, lr=lr, weight_decay=weight_decay)
+    elif opt_name == 'adamw':
+        return torch.optim.AdamW(model_params, lr=lr, weight_decay=weight_decay)
+    elif opt_name == 'sgd':
+        momentum = kwargs.get('momentum', 0.9)
+        nesterov = kwargs.get('nesterov', False)
+        return torch.optim.SGD(
+            model_params, 
+            lr=lr, 
+            momentum=momentum,
+            nesterov=nesterov,
+            weight_decay=weight_decay
+        )
+    elif opt_name == 'radam':
+        return torch.optim.RAdam(model_params, lr=lr, weight_decay=weight_decay)
+    elif opt_name == 'adagrad':
+        return torch.optim.Adagrad(model_params, lr=lr, weight_decay=weight_decay)
+    elif opt_name == 'adadelta':
+        rho = kwargs.get('rho', 0.9)
+        return torch.optim.Adadelta(
+            model_params, 
+            lr=lr, 
+            rho=rho, 
+            weight_decay=weight_decay
+        )
+    raise ValueError(f'Unsupported optimizer: {opt_name}')
+
+def get_scheduler(scheduler_name, optimizer, max_epoch, **kwargs):
+    if scheduler_name == 'cosine':
+        eta_min = kwargs.get('eta_min', 1e-6)
+        return lr_scheduler.CosineAnnealingLR(
+            optimizer, 
+            T_max=max_epoch, 
+            eta_min=eta_min
+        )
+    elif scheduler_name == 'one_cycle':
+        steps_per_epoch = kwargs.get('steps_per_epoch', 100)
+        pct_start = kwargs.get('pct_start', 0.3)
+        return lr_scheduler.OneCycleLR(
+            optimizer,
+            max_lr=optimizer.param_groups[0]['lr'],
+            epochs=max_epoch,
+            steps_per_epoch=steps_per_epoch,
+            pct_start=pct_start
+        )
+    elif scheduler_name == 'multistep':
+        milestones = kwargs.get('milestones', [50, 100])
+        gamma = kwargs.get('gamma', 0.1)
+        return lr_scheduler.MultiStepLR(
+            optimizer,
+            milestones=milestones,
+            gamma=gamma
+        )
+    elif scheduler_name == 'reduce_on_plateau':
+        patience = kwargs.get('patience', 10)
+        factor = kwargs.get('factor', 0.1)
+        return lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode='min',
+            factor=factor,
+            patience=patience,
+            verbose=True
+        )
+    elif scheduler_name == 'exponential':
+        gamma = kwargs.get('exp_gamma', 0.95)
+        return lr_scheduler.ExponentialLR(
+            optimizer,
+            gamma=gamma
+        )
+    elif scheduler_name == 'cyclic':
+        base_lr = kwargs.get('base_lr', 1e-5)
+        max_lr = kwargs.get('max_lr', 1e-2)
+        return lr_scheduler.CyclicLR(
+            optimizer,
+            base_lr=base_lr,
+            max_lr=max_lr,
+            step_size_up=2000,
+            mode='triangular2'
+        )
+    raise ValueError(f'Unsupported scheduler: {scheduler_name}')
+
+def do_training(**kwargs):
+    # wandb init을 가장 먼저 실행
+    wandb.init(project="Project-OCR")
+    
+    # wandb config에서 값 가져오기
+    if wandb.config:
+        for key, value in wandb.config.items():
+            kwargs[key] = value
+
+    # Logger는 wandb.init() 이후에 초기화
+    logger = WandbLogger(name=kwargs.get('wandb_run_name'))
+    logger.initialize(config=kwargs)
+
+    # 데이터셋 설정
+    dataset = SceneTextDataset(
+        kwargs['data_dir'],
+        split='train',
+        image_size=kwargs['image_size'],
+        crop_size=kwargs['input_size']
+    )
+    dataset = EASTDataset(dataset)
+    train_loader = DataLoader(
+        dataset,
+        batch_size=kwargs['batch_size'],
+        shuffle=True,
+        num_workers=kwargs['num_workers']
+    )
+    num_batches = math.ceil(len(dataset) / kwargs['batch_size'])
+
+    # 모델 설정
+    device = torch.device(kwargs['device'])
+    model = EAST()
+    model.to(device)
+
+    # 옵티마이저 설정
+    optimizer = get_optimizer(
+        kwargs['optimizer_type'],
+        model.parameters(),
+        kwargs['learning_rate'],
+        kwargs['weight_decay'],
+        momentum=kwargs.get('momentum', 0.9),
+        nesterov=kwargs.get('nesterov', False)
+    )
+
+    # 스케줄러 설정
+    scheduler = get_scheduler(
+        kwargs['scheduler_type'],
+        optimizer,
+        kwargs['max_epoch'],
+        steps_per_epoch=len(train_loader),
+        eta_min=kwargs.get('eta_min', 1e-6),
+        pct_start=kwargs.get('pct_start', 0.3)
+    )
+
+    model.train()
+    for epoch in range(kwargs['max_epoch']):
+        epoch_loss = 0
+        epoch_cls_loss = 0
+        epoch_angle_loss = 0
+        epoch_iou_loss = 0
+        epoch_start = time.time()
+
+        with tqdm(total=num_batches) as pbar:
+            for batch_idx, (img, gt_score_map, gt_geo_map, roi_mask) in enumerate(train_loader):
+                pbar.set_description(
+                    f'[Epoch {epoch+1}/{kwargs["max_epoch"]}][{batch_idx+1}/{num_batches}]'
+                )
+
+                loss, extra_info = model.train_step(img, gt_score_map, gt_geo_map, roi_mask)
+                
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                # batch 단위로 scheduler step을 해야하는 경우
+                if kwargs['scheduler_type'] == 'one_cycle':
+                    scheduler.step()
+
+                batch_size = img.size(0)
+                loss_val = loss.item() * batch_size
+                epoch_loss += loss_val
+                epoch_cls_loss += extra_info['cls_loss'] * batch_size
+                epoch_angle_loss += extra_info['angle_loss'] * batch_size
+                epoch_iou_loss += extra_info['iou_loss'] * batch_size
+
+                pbar.update(1)
+                val_dict = {
+                    'Loss': f"{loss_val/batch_size:.4f}",
+                    'Cls': f"{extra_info['cls_loss']:.4f}",
+                    'Angle': f"{extra_info['angle_loss']:.4f}",
+                    'IoU': f"{extra_info['iou_loss']:.4f}",
+                    'LR': f"{scheduler.get_last_lr()[0]:.6f}"
+                }
+                pbar.set_postfix(val_dict)
+
+        if kwargs['scheduler_type'] != 'one_cycle':
+            scheduler.step()
+        
+        # 에포크 끝에서의 metrics 계산
+        epoch_time = timedelta(seconds=time.time() - epoch_start)
+        dataset_size = len(dataset)
+        
+        metrics = {
+            "epoch": epoch,
+            "loss": epoch_loss / dataset_size,
+            "cls_loss": epoch_cls_loss / dataset_size,
+            "angle_loss": epoch_angle_loss / dataset_size,
+            "iou_loss": epoch_iou_loss / dataset_size,
+            "learning_rate": scheduler.get_last_lr()[0],
+            "epoch_time": epoch_time.total_seconds()
+        }
+        logger.log_epoch_metrics(metrics)
+        
+        # 에포크 단위로 scheduler step을 해야하는 경우
+        if kwargs['scheduler_type'] == 'reduce_on_plateau':
+            scheduler.step(metrics['loss'])
+        elif kwargs['scheduler_type'] != 'one_cycle':  # one_cycle은 이미 batch마다 step 했음
+            scheduler.step()
+
+        if (epoch + 1) % kwargs['save_interval'] == 0:
+            if not osp.exists(kwargs['model_dir']):
+                os.makedirs(kwargs['model_dir'])
+
+            ckpt_fpath = osp.join(kwargs['model_dir'], f'epoch_{epoch+1}.pth')
+            torch.save({
+                'epoch': epoch + 1,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'scheduler_state_dict': scheduler.state_dict(),
+                'loss': metrics['loss'],
+            }, ckpt_fpath)
+            
+            logger.log_model(ckpt_fpath, f'model-epoch-{epoch+1}')
+
+    logger.finish()
+
+def main():
+    args = parse_args()
+    do_training(**vars(args))
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,41 @@
+program: python
+command:
+  - ${program}
+  - /data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/train_wandb_epoch_s3.py
+  - "--device=cuda"
+  - "--num_workers=8"
+
+method: bayes
+name: ocr-optimization
+metric:
+  name: loss
+  goal: minimize
+
+parameters:
+  # 기본 학습 파라미터
+  learning_rate:
+    min: 0.0001
+    max: 0.01
+    distribution: log_uniform
+
+  batch_size:
+    values: [1, 2, 4, 8]
+
+  # 옵티마이저 설정
+  optimizer_type:
+    values: ['adam', 'adamw']  # sgd 제거
+
+  # 공통 옵티마이저 파라미터
+  weight_decay:
+    min: 0.0001
+    max: 0.01
+    distribution: log_uniform
+
+  # 스케줄러 설정
+  scheduler_type:
+    values: ['cosine', 'multistep']
+
+early_terminate:
+  type: hyperband
+  min_iter: 30
+  eta: 2
