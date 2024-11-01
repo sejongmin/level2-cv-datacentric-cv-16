@@ -1,3 +1,17 @@
+#python train_wandb.py  # 기본 실행
+#python train_wandb.py --wandb_run_name "experiment-1"  # 실험 이름 지정하고 싶을 때
+"""
+# resume 하는 방법
+# 노션에 wandb 사용법 페이지를 보면 좀 더 참고할 수 있습니다
+
+python train_wandb_epoch_v2_re.py \
+    --resume \
+    --checkpoint_path trained_models/epoch_150.pth \
+    --wandb_run_id YOUR_WANDB_RUN_ID \
+    --max_epoch 300
+
+"""
+
 import sys, os
 import os
 import os.path as osp
@@ -17,6 +31,8 @@ from dataset import SceneTextDataset
 from model import EAST
 
 from logger_epoch import WandbLogger
+
+import wandb
 
 def save_top_k_checkpoints(model_dir, new_ckpt_path, new_loss, k=10):
     """
@@ -83,6 +99,10 @@ def parse_args():
     
     parser.add_argument('--wandb_run_name', type=str, default=None,
                        help='Name for the wandb run (optional)')
+    
+    parser.add_argument('--resume', action='store_true', help='Resume training from checkpoint')
+    parser.add_argument('--checkpoint_path', type=str, help='Path to checkpoint file')
+    parser.add_argument('--wandb_run_id', type=str, help='Wandb run ID to resume')
 
     args = parser.parse_args()
 
@@ -93,7 +113,8 @@ def parse_args():
 
 
 def do_training(data_dir, model_dir, device, image_size, input_size, num_workers, batch_size,
-                learning_rate, max_epoch, save_interval, wandb_run_name):
+                learning_rate, max_epoch, save_interval, 
+                wandb_run_name, resume=False, checkpoint_path=None, wandb_run_id=None):
     
     # Initialize wandb logger
     logger = WandbLogger(name=wandb_run_name)
@@ -109,7 +130,57 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
         "scheduler": "CosineAnnealingLR",
         "device": device
     }
-    logger.initialize(config)
+    
+    # Device 설정
+    device = torch.device(device)
+    
+    # 모델 초기화
+    model = EAST()
+    model.to(device)
+    
+    # 옵티마이저 초기화
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=0.01)
+    
+    # 시작 epoch 초기화
+    start_epoch = 0
+    
+    # 기존의 logger.initialize(config) 부분을 아래 코드로 대체
+    if resume:
+        if not checkpoint_path or not os.path.exists(checkpoint_path):
+            raise ValueError("Checkpoint path must be provided for resume training")
+                
+        # Load checkpoint
+        print(f"Resuming from checkpoint: {checkpoint_path}")
+        checkpoint = torch.load(checkpoint_path, map_location=device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        
+        # Adjust scheduler for remaining epochs
+        start_epoch = checkpoint['epoch']
+        scheduler = lr_scheduler.CosineAnnealingLR(
+            optimizer, 
+            T_max=max_epoch,
+            eta_min=1e-6,
+            last_epoch=start_epoch-1
+        )
+        scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        
+        # Initialize wandb with resume
+        config["resumed_from_epoch"] = start_epoch
+        logger.run = wandb.init(
+            project=logger.project_name,
+            name=logger.name,
+            id=wandb_run_id,  # 기존 run ID 사용
+            resume="must",  # must로 설정하여 반드시 기존 run을 이어가도록 함
+            config=config
+        )
+    else:
+        scheduler = lr_scheduler.CosineAnnealingLR(
+            optimizer,
+            T_max=max_epoch,  # 전체 에포크 수
+            eta_min=1e-6      # 최소 학습률, 원하는 값으로 조정 가능
+        )
+        logger.initialize(config)
     
     dataset = SceneTextDataset(
         data_dir,
@@ -126,23 +197,11 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
         num_workers=num_workers
     )
 
-    # device 설정 중복 제거
-    device = torch.device(device)
-    model = EAST()
-    model.to(device)
-    
-    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=0.001)
-    scheduler = lr_scheduler.CosineAnnealingLR(
-        optimizer,
-        T_max=max_epoch,  # 전체 에포크 수
-        eta_min=1e-6      # 최소 학습률, 원하는 값으로 조정 가능
-    )
-
     model.train()
     
     best_loss = float('inf')
     
-    for epoch in range(max_epoch):
+    for epoch in range(start_epoch, max_epoch):
         epoch_loss = 0
         epoch_cls_loss = 0
         epoch_angle_loss = 0
@@ -210,7 +269,7 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
             if not osp.exists(model_dir):
                 os.makedirs(model_dir)
 
-            ckpt_fpath = osp.join(model_dir, f'epoch_{epoch+1}.pth')
+            # 체크포인트 데이터 준비
             ckpt_data = {
                 'epoch': epoch + 1,
                 'model_state_dict': model.state_dict(),
@@ -218,13 +277,17 @@ def do_training(data_dir, model_dir, device, image_size, input_size, num_workers
                 'scheduler_state_dict': scheduler.state_dict(),
                 'loss': mean_epoch_loss,
             }
+
+            #먼저 현재 체크포인트 저장
+            ckpt_fpath = osp.join(model_dir, f'epoch_{epoch+1}.pth')
             torch.save(ckpt_data, ckpt_fpath)
+            
+            # Log model checkpoint
+            logger.log_model(ckpt_fpath, f'model-epoch-{epoch+1}')
             
             # 상위 k개만 유지
             save_top_k_checkpoints(model_dir, ckpt_fpath, mean_epoch_loss, k=7)
             
-            # Log model checkpoint
-            logger.log_model(ckpt_fpath, f'model-epoch-{epoch+1}')
             
             # 가장 좋은 모델 별도 저장
             if mean_epoch_loss < best_loss:
@@ -243,5 +306,3 @@ if __name__ == '__main__':
     args = parse_args()
     main(args)
     
-#python train_wandb.py  # 기본 실행
-#python train_wandb.py --wandb_run_name "experiment-1"  # 실험 이름 지정하고 싶을 때
