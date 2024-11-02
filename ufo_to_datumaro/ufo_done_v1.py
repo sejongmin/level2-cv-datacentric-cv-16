@@ -93,8 +93,8 @@ def save_json(data, filename):
 
 def main():
     # JSON 파일 읽기
-    new = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/ufo_to_datumaro/datumaro2ufo/ufoTest.json")
-    train = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/data/thai_receipt/ufo/train.json")
+    new = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/ufo_to_datumaro/datumaro2ufo/testHyang.json")
+    train = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/data/thai_receipt/ufo/erased_empty_transcription.json")
     
     # 포맷 변환
     converted = convert_format(new, train)
