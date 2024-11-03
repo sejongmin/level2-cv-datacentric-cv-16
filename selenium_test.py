@@ -9,6 +9,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 from pyvirtualdisplay import Display
 import os
+from create_annotation import UFOAnnotationWithEasyocr
+from tqdm import tqdm
+
+import shutil
 
 # 기본 세팅 방법
 # https://github.com/password123456/setup-selenium-with-chrome-driver-on-ubuntu_debian?tab=readme-ov-file#step-6-create-hello_world
@@ -16,6 +20,41 @@ import os
 # Selenium python document
 
 if __name__=="__main__":
+    
+    ## 번역 옵션들
+    translate_opt = {'text': 'translate',
+                     'images' : 'images',
+                     'docs' : 'docs'}
+    lang_opt = {'english' : 'en',
+                'korean' : 'ko',
+                'vietnamese' : 'vi',
+                'thai' : 'th',
+                'japanese' : 'ja',
+                'chinese' : 'zh-CN'}
+    
+    ## 구글 번역기
+    _from = 'japanese'
+    _to = 'korean'
+    _with = 'images'
+
+    img_folder = 'data/japanese_receipt/img/train'
+    
+    ## 기본 경로 세팅 
+    dataset_name = 'ja2ko'
+    
+    data_root = f'data/{dataset_name}_receipt'
+    
+    img_path = os.path.join(data_root, 'img')
+    img_train_path = os.path.join(img_path, 'train')
+    
+    ufo_path = os.path.join(data_root, 'ufo')
+    
+    download_path = '/data/ephemeral/home/Downloads'
+    
+    ## Custom Dataset 폴더 생성 & rename
+    os.makedirs(img_path, exist_ok=True)
+    os.makedirs(ufo_path, exist_ok=True)
+    
     # 가상 디스플레이 시작
     display = Display(visible=1, size=(1920, 1080), backend="xvfb")
     display.start()
@@ -34,31 +73,13 @@ if __name__=="__main__":
 
     # driver.get("https://python.org")
     # print(driver.title)
-
-    translate_opt = {'text': 'translate',
-                     'images' : 'images',
-                     'docs' : 'docs'}
-    lang_opt = {'english' : 'en',
-                'korean' : 'ko',
-                'vietnamese' : 'vi',
-                'thai' : 'th',
-                'japanese' : 'ja',
-                'chinese' : 'zh-CN'}
-    
-    _from = 'japanese'
-    _to = 'korean'
-    _with = 'images'
-
-    img_folder = 'data/japanese_receipt/img/train'
     
     url = f"https://translate.google.co.kr/?sl={lang_opt[_from]}&tl={lang_opt[_to]}&op={translate_opt[_with]}"
 
     driver.get(url)
 
-    for path in sorted(os.listdir(img_folder)):
+    for path in tqdm(sorted(os.listdir(img_folder))):
         abs_path = os.path.abspath(os.path.join(img_folder, path))
-        
-        print(abs_path)
         
         file_input = driver.find_element(By.XPATH, '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[4]/c-wiz/div[2]/c-wiz/div/div/div/div[1]/div[2]/div[2]/div[1]/input')
         file_input.send_keys(abs_path)
@@ -87,4 +108,14 @@ if __name__=="__main__":
         
     driver.close()
     display.stop()
-        
+    
+    shutil.move(download_path, img_path)
+    os.rename(os.path.join(img_path, 'Downloads'), img_train_path)
+    
+    for path in os.listdir(img_train_path):
+        new_name = path.split('.')
+        new_name[1] = dataset_name
+        os.rename(os.path.join(img_train_path, path), os.path.join(img_train_path, ".".join(new_name)))
+    
+    UFOAnnotator = UFOAnnotationWithEasyocr(img_train_path, os.path.join(ufo_path, 'train.json'), ['en', 'ko'])
+    UFOAnnotator.create_annotation()
