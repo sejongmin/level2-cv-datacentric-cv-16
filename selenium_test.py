@@ -49,24 +49,26 @@ if __name__=="__main__":
     url = f"https://translate.google.co.kr/?sl={lang_opt[_from]}&tl={lang_opt[_to]}&op={translate_opt[_with]}"
 
     driver.get(url)
+
+    time.sleep(1)
     
     file_input = driver.find_element(By.XPATH, '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[4]/c-wiz/div[2]/c-wiz/div/div/div/div[1]/div[2]/div[2]/div[1]/input')
     file_path = '/data/ephemeral/home/kwak/level2-cv-datacentric-cv-16/data/japanese_receipt/img/train/extractor.ja.in_house.appen_000028_page0001.jpg'
     
     file_input.send_keys(file_path)
     
-    time.sleep(2)
+    time.sleep(3)
     download_btn = driver.find_element(By.XPATH, '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[4]/c-wiz/div[2]/c-wiz/div/div[1]/div[2]/div[2]/button')
     
     download_btn.click()
     
-    time.sleep(2)
+    time.sleep(3)
     
     rm_curr_btn = driver.find_element(By.XPATH, '//*[@id="yDmH0d"]/c-wiz/div/div[2]/c-wiz/div[4]/c-wiz/div[2]/c-wiz/div/div[1]/div[2]/span[3]/button')
     
     rm_curr_btn.click()
     
-    time.sleep(2)
+    time.sleep(3)
     
     driver.close()
     display.stop()
