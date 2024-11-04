@@ -10,6 +10,7 @@ import albumentations as A
 from torch.utils.data import Dataset
 from shapely.geometry import Polygon
 from numba import njit
+A.seed_everything(16)
 
 @njit
 def cal_distance(x1, y1, x2, y2):
@@ -250,7 +251,7 @@ def rotate_all_pixels(rotate_mat, anchor_x, anchor_y, length):
     y_lin = y.reshape((1, x.size))
     coord_mat = np.concatenate((x_lin, y_lin), 0)
     rotated_coord = np.dot(rotate_mat, coord_mat - np.array([[anchor_x], [anchor_y]])) + \
-                                                   np.array([[anchor_x], [anchor_y]])
+                                                    np.array([[anchor_x], [anchor_y]])
     rotated_x = rotated_coord[0, :].reshape(x.shape)
     rotated_y = rotated_coord[1, :].reshape(y.shape)
     return rotated_x, rotated_y
@@ -400,6 +401,7 @@ class SceneTextDataset(Dataset):
         )
 
         image = Image.open(image_fpath)
+
         image, vertices = resize_img(image, vertices, self.image_size)
         image, vertices = adjust_height(image, vertices)
         image, vertices = rotate_img(image, vertices)
