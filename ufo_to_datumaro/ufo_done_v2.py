@@ -115,16 +115,16 @@ def main():
     # JSON 파일 읽기
     
     # 편집하고 싶은 새로 만든 json
-    new = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/ufo_to_datumaro/datumaro2ufo/testHyang.json")
+    new = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/ufo_to_datumaro/datumaro2ufo/receipt_thai2.json")
     
     # 포맷을 복사해올 원본 train.json의 경로
-    train = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/data/thai_receipt/ufo/erased_empty_transcription.json")
+    train = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/data/thai_receipt/ufo/train.json")
     
     # 포맷 변환
     converted = convert_format(new, train)
     
     # 결과 저장
-    save_json(converted, "converted1.json")
+    save_json(converted, "receipt_thai2_conv.json")
 
 if __name__ == "__main__":
     main()
