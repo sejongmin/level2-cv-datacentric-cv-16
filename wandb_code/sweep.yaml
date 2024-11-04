@@ -1,7 +1,7 @@
 program: python
 command:
   - ${program}
-  - /data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/train_wandb_epoch_s4.py
+  - /data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/train_wandb_sweep.py
   - "--device=cuda"
   - "--num_workers=8"
   - "--max_epoch=50" #직접 max_epoch 지정
