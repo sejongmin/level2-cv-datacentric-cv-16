@@ -34,13 +34,13 @@ if __name__=="__main__":
     
     ## 구글 번역기
     _from = 'japanese'
-    _to = 'thai'
+    _to = 'vietnamese'
     _with = 'images'
 
     img_folder = 'data/japanese_receipt/img/train'
     
     ## 기본 경로 세팅 
-    dataset_name = 'th2ja'
+    dataset_name = 'ja2vi'
     
     data_root = f'data/{dataset_name}_receipt'
     
