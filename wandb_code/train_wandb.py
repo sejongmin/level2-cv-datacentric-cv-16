@@ -1,10 +1,18 @@
-#python train_wandb.py  # 기본 실행
-#python train_wandb.py --wandb_run_name "experiment-1"  # 실험 이름 지정하고 싶을 때
 """
-# resume 하는 방법
-# 노션에 wandb 사용법 페이지를 보면 좀 더 참고할 수 있습니다
+# 기본 실행
+python wandb_code/train_wandb.py
 
-python train_wandb_epoch_v2_re.py \
+# wandb 실험 이름 지정 (권장)
+python wandb_code/train_wandb.py --wandb_run_name "ex1"
+
+실행할 때 resume 코드에만 옵티마이저와 스케줄러를 수정한 것은 아닌지 확인할 것!
+의도한 것과 다른 하이퍼 파라미터를 받아갈 수도 있다.
+
+
+# resume 하는 방법
+- 노션에 wandb 사용법 페이지를 보면 좀 더 참고할 수 있습니다
+
+python train_wandb.py \
     --resume \
     --checkpoint_path trained_models/epoch_150.pth \
     --wandb_run_id YOUR_WANDB_RUN_ID \
@@ -15,6 +23,10 @@ python train_wandb_epoch_v2_re.py \
 import sys, os
 import os
 import os.path as osp
+
+# 현재 파일의 상위 디렉토리를 path에 추가
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import time
 import math
 from datetime import timedelta
@@ -33,6 +45,13 @@ from model import EAST
 from logger_epoch import WandbLogger
 
 import wandb
+
+import numpy as np
+import random
+
+np.random.seed(16)
+random.seed(16)
+
 
 def save_top_k_checkpoints(model_dir, new_ckpt_path, new_loss, k=10):
     """
@@ -77,15 +96,20 @@ def save_top_k_checkpoints(model_dir, new_ckpt_path, new_loss, k=10):
         except Exception as e:
             print(f"Warning: Failed to remove checkpoint {ckpt_path}: {e}")
             
+
+# 현재 스크립트의 디렉토리를 기준으로 절대 경로 생성
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_MODEL_DIR = os.path.join(BASE_DIR, '..', 'trained_models')
+DEFAULT_DATA_DIR = os.path.join(BASE_DIR, '..', 'data')
         
 def parse_args():
     parser = ArgumentParser()
 
     # Conventional args
     parser.add_argument('--data_dir', type=str,
-                        default=os.environ.get('SM_CHANNEL_TRAIN', 'data'))
-    parser.add_argument('--model_dir', type=str, default=os.environ.get('SM_MODEL_DIR',
-                                                                        'trained_models'))
+                        default=os.environ.get('SM_CHANNEL_TRAIN', DEFAULT_DATA_DIR))
+    parser.add_argument('--model_dir', type=str, 
+                       default=os.environ.get('SM_MODEL_DIR', DEFAULT_MODEL_DIR))
 
     parser.add_argument('--device', default='cuda' if cuda.is_available() else 'cpu')
     parser.add_argument('--num_workers', type=int, default=8)
