@@ -4,12 +4,17 @@ python inference_wandb.py --data_dir data --model_dir trained_models
 
 # wandb 코드로 나온 거 특정 체크포인트 지정
 python inference_wandb.py --data_dir data --checkpoint_path trained_models/epoch_100.pth
+python wandb_code/inference_wandb.py --data_dir data --checkpoint_path trained_models/epoch_100.pth
 
 """
 
-
+import sys
 import os
 import os.path as osp
+
+# 현재 파일의 상위 디렉토리를 path에 추가
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import json
 from argparse import ArgumentParser
 from glob import glob
@@ -105,7 +110,7 @@ def main(args):
                               args.batch_size, split='test')
     ufo_result['images'].update(split_result['images'])
 
-    output_fname = 'output.csv'
+    output_fname = 'output_ep140best.csv'
     with open(osp.join(args.output_dir, output_fname), 'w') as f:
         json.dump(ufo_result, f, indent=4)
 

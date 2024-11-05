@@ -1,3 +1,6 @@
+# ufo 포맷 통일 + 확장자 추가 + 이미지 사이즈 매핑하는 코드
+# 최하단에 경로 입력하는 곳 있음
+
 import json
 from pathlib import Path
 import os
@@ -115,16 +118,16 @@ def main():
     # JSON 파일 읽기
     
     # 편집하고 싶은 새로 만든 json
-    new = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/ufo_to_datumaro/datumaro2ufo/receipt_thai2.json")
+    new = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/ufo_to_datumaro/datumaro2ufo/receipt_china_trans_2.json")
     
     # 포맷을 복사해올 원본 train.json의 경로
-    train = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/data/thai_receipt/ufo/train.json")
+    train = read_json("/data/ephemeral/home/kjh/level2-cv-datacentric-cv-16/data/chinese_receipt/ufo/train.json")
     
     # 포맷 변환
     converted = convert_format(new, train)
     
     # 결과 저장
-    save_json(converted, "receipt_thai2_conv.json")
+    save_json(converted, "china2.json")
 
 if __name__ == "__main__":
     main()
