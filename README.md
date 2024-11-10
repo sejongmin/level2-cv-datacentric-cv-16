@@ -50,7 +50,7 @@ pip install PyVirtualDisplay
 <br/>
 <br/>
 
-# 학습 코드 실행
+# 기본 학습 코드 실행
 ```
 python train.py
 ```
@@ -59,7 +59,7 @@ python train.py
 <br/>
 <br/>
 
-# 추론 코드 실행
+# 기본 추론 코드 실행
 ```
 python inference.py
 ```
