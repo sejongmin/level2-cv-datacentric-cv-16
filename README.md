@@ -52,7 +52,7 @@ pip install PyVirtualDisplay
 
 # 학습 코드 실행
 ```
-sh train.sh
+python train.py
 ```
 모델 학습에 필요한 하이퍼파라미터는 train.sh와 args.py에서 확인할 수 있습니다. 
 
@@ -61,7 +61,7 @@ sh train.sh
 
 # 추론 코드 실행
 ```
-sh test.sh
+python inference.py
 ```
 모델 추론에 필요한 하이퍼파라미터는 test.sh와 args.py에서 확인할 수 있습니다. 
 
