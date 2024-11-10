@@ -151,7 +151,8 @@ python inference.py
 ```
 ### streamlit/
 - 
-
+```
+```
 ### ufo_to_datumaro/
 -
 ```
