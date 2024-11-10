@@ -70,42 +70,35 @@ python inference.py
 
 # Project Structure (프로젝트 구조)
 ```plaintext
-📦level1-imageclassification-cv-16
+📦level2-cv-datacentric-cv-16
+ ┣ 📂.git
  ┣ 📂.github
  ┃ ┣ 📂ISSUE_TEMPLATE
  ┃ ┃ ┗ 📜-title----body.md
  ┃ ┣ 📜.keep
  ┃ ┗ 📜pull_request_template.md
- ┣ 📂model
- ┃ ┣ 📜cnn.py
- ┃ ┣ 📜mlp.py
- ┃ ┣ 📜model_selection.py
- ┃ ┣ 📜resnet18.py
- ┃ ┣ 📜timm.py
- ┃ ┗ 📜torchvision_model.py
- ┣ 📂util
- ┃ ┣ 📜augmentation.py
- ┃ ┣ 📜checkpoints.py
- ┃ ┣ 📜data.py
- ┃ ┣ 📜losses.py
- ┃ ┣ 📜metrics.py
- ┃ ┣ 📜optimizers.py
- ┃ ┗ 📜schedulers.py
+ ┣ 📂anno
+ ┃ ┣ 📂1
+ ┃ ┣ 📂2
+ ┃ ┣ 📂3
+ ┃ ┣ 📂cord
+ ┃ ┗ 📂crawl
+ ┣ 📂augmentation
+ ┃ ┗ 📜augmentation.ipynb
+ ┣ 📂crawling
+ ┃ ┗ 📜realwhth.ipynb
+ ┣ 📂streamlit
+ ┃ ┣ 📜뭐뭐.py
+ ┃ ┗ 📜뭐뭐.ipynb
+ ┣ 📂ufo_to_datumaro
+ ┃ ┣ 📜뭐뭐.py
+ ┃ ┗ 📜뭐뭐.ipynb
+ ┣ 📂wandb_code
+ ┃ ┣ 📜뭐뭐.py
+ ┃ ┗ 📜뭐뭐.ipynb
  ┣ 📜.gitignore
  ┣ 📜README.md
- ┣ 📜args.py
- ┣ 📜eda.ipynb
- ┣ 📜eda.py
- ┣ 📜erase_dot_files.py
- ┣ 📜gradcam.py
- ┣ 📜image_augmentation.py
- ┣ 📜separate.py
- ┣ 📜test.py
- ┣ 📜test.sh
- ┣ 📜train.ipynb
- ┣ 📜train.py
- ┣ 📜train.sh
- ┗ 📜trainer.py
+ ┗ 📜뭐뭐.py
 ```
 
 <br/>
