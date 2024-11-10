@@ -104,72 +104,66 @@ python inference.py
 <br/>
 
 ### train.py
-- train.py 파일을 실행시키면서 학습에 필요한 인자를 입력하는 쉘 스크립트 파일. 학습 재개 시 저장 시점과 동일한 하이퍼파라미터를 사용
+- 
 ```
 
 ```
 ### inference.py
-- trainer.py의 trainer 클래스를 불러와서 학습 시킴
+- 
 
 ### dataset.py
-- test.sh에서 인자를 받아 test.py 파일을 실행해 test data의 예측 결과 저장. train.sh와 비슷
+- 
 
 ### deteval.py
-- 학습 모듈
+- 
 ```
 
 ```
 ### ensemble.py
-- 모든 데이터의 메타데이터를 추출하여 csv파일로 만드는 파일
+- 
 ```
 
 ```
 ### data_clean_json.py
-- train.sh, test.sh에서 받아온 인자를 파이썬에서 사용할 수 있는 변수로 변환하는 모듈
+- 
 ```
 
 ```
 ### create_annotation.py, create_annotation.ipynb
-- Grad-CAM을 통해 Heatmap을 반환하는 함수를 포함하는 파일
+- 
 ```
 ```
 
 ### google_image_translate_with_selenium.py
-- offline augmentation하는 파일. 종횡비를 맞추기 위해 흰 배경 추가하는 코드와 flip을 적용하는 코드가 있다. 추가된 이미지를 포함한 ./data/train1.csv 파일을 생성
+- 
 ```
 ```
 
 ### make_cord.ipynb
-- 데이터셋을 물리적으로 분리하는 파일
+- 
 ```
 ```
 
-### util/augmentation.py
-- augmentation 라이브러리를 관리하는 모듈. Albumentation을 사용
+### crawling/realwhth.ipynb
+- 
 ```
- -AlbumentationsTransforms 클래스: train.sh에서 받는 augmentations 인자를 가지고 클래스의 생성자가 full_aug_list를 보고 aug_list에 추가하여 사용할 증강 기법을 선택
- -TransformSelector: train.sh에서 받은 transform 인자로 어떤 증강 클래스를 사용할지 선택
+
 ```
-### util/checkpoints.py
-- 체크포인트를 저장/불러오기 하는 모듈
+### streamlit/
+- 
 
-### util/data.py
-- Dataset, DataLoader를 재정의하는 모듈
+### ufo_to_datumaro/
+-
 ```
- -CustomDataset 클래스: 대회를 위해 제공받은 데이터셋에 맞게 데이터를 불러오게하는 Dataset
- -HoDataset, HoDataLoader 클래스: K-Fold cross validation을 위한 Dataset, DataLoader
+
 ```
-### util/losses.py
-- loss function을 가짐
+### wandb_code/
+- 
+```
 
-### util/metrics.py
-- f1 score을 계산하는 모듈
+```
+### anno/
+- 
+```
 
-### util/optimizers.py
-- train.sh의 optim 인자를 받아서 optimizer를 선택할 수 있게 매핑하는 모듈
-
-### util/schedulers.py
-- train.sh의 lr_scheduler 인자를 받아서 learning rate scheduler를 선택할 수 있게 매핑하는 모듈
-
-### model/
-- model_selection 파일은 다른 모델을 불러오는 파일. timm, torchvision_model은 라이브러리를 쉽게 불러오기 위한 모듈
+```
