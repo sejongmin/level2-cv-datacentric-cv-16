@@ -147,3 +147,13 @@ work_dir
 visualizations
 
 mae_pretrain_vit_base.pth
+
+code.tar.gz
+code.tar.gz.1
+
+detect.py
+east_dataset.py
+loss.py
+model.py
+
+google-chrome-stable_current_amd64.deb

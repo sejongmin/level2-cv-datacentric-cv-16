@@ -10,6 +10,7 @@ import albumentations as A
 from torch.utils.data import Dataset
 from shapely.geometry import Polygon
 from numba import njit
+# A.seed_everything(16)
 
 @njit
 def cal_distance(x1, y1, x2, y2):
@@ -250,7 +251,7 @@ def rotate_all_pixels(rotate_mat, anchor_x, anchor_y, length):
     y_lin = y.reshape((1, x.size))
     coord_mat = np.concatenate((x_lin, y_lin), 0)
     rotated_coord = np.dot(rotate_mat, coord_mat - np.array([[anchor_x], [anchor_y]])) + \
-                                                   np.array([[anchor_x], [anchor_y]])
+                                                    np.array([[anchor_x], [anchor_y]])
     rotated_x = rotated_coord[0, :].reshape(x.shape)
     rotated_y = rotated_coord[1, :].reshape(y.shape)
     return rotated_x, rotated_y
@@ -337,13 +338,14 @@ def filter_vertices(vertices, labels, ignore_under=0, drop_under=0):
 class SceneTextDataset(Dataset):
     def __init__(self, root_dir,
                  split='train',
+                 _lang_list = ['chinese', 'japanese', 'thai', 'vietnamese'],
                  image_size=2048,
                  crop_size=1024,
                  ignore_under_threshold=10,
                  drop_under_threshold=1,
                  color_jitter=True,
                  normalize=True):
-        self._lang_list = ['chinese', 'japanese', 'thai', 'vietnamese']
+        self._lang_list = _lang_list
         self.root_dir = root_dir
         self.split = split
         total_anno = dict(images=dict())
@@ -373,8 +375,9 @@ class SceneTextDataset(Dataset):
         elif lang_indicator == 'vi':
             lang = 'vietnamese'
         else:
-            raise ValueError
-        return osp.join(self.root_dir, f'{lang}_receipt', 'img', self.split)
+            lang = lang_indicator
+            # raise ValueError
+        return osp.join(self.root_dir, f'{lang}_receipt', 'img', 'train')
     def __len__(self):
         return len(self.image_fnames)
 
@@ -399,6 +402,7 @@ class SceneTextDataset(Dataset):
         )
 
         image = Image.open(image_fpath)
+
         image, vertices = resize_img(image, vertices, self.image_size)
         image, vertices = adjust_height(image, vertices)
         image, vertices = rotate_img(image, vertices)
