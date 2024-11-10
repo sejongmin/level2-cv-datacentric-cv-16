@@ -195,5 +195,5 @@ train_wandb_sweep.py
 train_wandb_v2.py
 ```
 ### anno/
-- 
+- 학습에 사용되었던 수정된 annotation 파일들입니다. 학습에 사용된 데이터는 저작권 때문에 제공해드릴 수 없습니다.
 
