@@ -54,7 +54,6 @@ pip install PyVirtualDisplay
 ```
 python train.py
 ```
-모델 학습에 필요한 하이퍼파라미터는 train.sh와 args.py에서 확인할 수 있습니다. 
 
 <br/>
 <br/>
@@ -63,7 +62,7 @@ python train.py
 ```
 python inference.py
 ```
-모델 추론에 필요한 하이퍼파라미터는 test.sh와 args.py에서 확인할 수 있습니다. 
+모델 추론 결과로 csv파일을 반환합니다. 
 
 <br/>
 <br/>
@@ -104,17 +103,19 @@ python inference.py
 <br/>
 
 ### train.py
-- 
+- 학습을 하기 위한 기본적인 코드입니다. OCR 중 객체 위치 탐지만을 학습합니다.
 ```
-
+python train.py
 ```
 ### inference.py
-- 
+- 학습된 객체 위치 탐지 모델으로 객체 위치를 추정합니다. 결과값으로 CSV파일이 저장됩니다. 
 ```
+python inference.py
 ```
 ### dataset.py
-- 
+- dataset을 정의하며, 데이터에 적용될augmentation을 다룹니다.
 ```
+
 ```
 ### deteval.py
 - 
@@ -122,28 +123,39 @@ python inference.py
 
 ```
 ### ensemble.py
-- 
+- 추론을 통해 얻은 csv파일을 hard voting 방식으로 앙상블합니다. 
 ```
-
+python ensemble.py --input_dir your_csv_dir
+# --output_dir 결과 출력 위치
+# --iou_min 실험할 iou 최소값
+# --iou_max 실험할 iou 최대값
+# --iou_step 실험할 때 iou 증가량
+# --vote_min 실험할 때 bbox를 결정할 때 vote 최소 개수
+# --vote_max 실험할 때 bbox를 결정할 때 vote 최대 개수
+# --single_iou 단일 iou 값
+# --single_vote 단일 vote 값
 ```
 ### data_clean_json.py
-- 
+- UFO format annotation 파일에서 transcription 기준으로 bbox를 삭제합니다.
 ```
-
+python data_clean_json.py
 ```
 ### create_annotation.py, create_annotation.ipynb
-- 
+- easyocr를 활용하여 입력으로 들어오는 이미지에 대해 annotation을 수행한 후 ufo format으로 변환합니다.
 ```
+python create_annotation.py
 ```
 
 ### google_image_translate_with_selenium.py
-- 
+- google translate 웹사이트에서 지원하는 image tranlsation을 활용하여 자동으로 이미지를 특정 언어로 번역하고 자동 annotation까지 수행한 후 바로 활용 가능한 데이터셋으로 만들어줍니다.
 ```
+python google_image_translate_with_selenium.py
 ```
 
 ### make_cord.ipynb
 - 
 ```
+
 ```
 
 ### crawling/realwhth.ipynb
@@ -152,21 +164,36 @@ python inference.py
 
 ```
 ### streamlit/
-- 
+- streamlit을 활용하여 데이터 및 모델 출력물에 대해 시각화할 수 있습니다.
 ```
+load_json.py
+main.py
+visualize_csv.py
+visualize_json.py
 ```
 ### ufo_to_datumaro/
 -
 ```
-
+bbox_to_polygon.py
+datumaro_to_ufo_v2.ipynb
+ufo_done.py
+ufo_to_datumaro_v1.ipynb
+ufo_to_datumaro_v2.ipynb
+utils.py
+utils_v2.py
 ```
 ### wandb_code/
 - 
 ```
-
+inference_wandb.py
+logger_epoch.py
+logger_sweep.py
+sweep.yaml
+train_wandb.py
+train_wandb_onecycleLR.py
+train_wandb_sweep.py
+train_wandb_v2.py
 ```
 ### anno/
 - 
-```
 
-```
