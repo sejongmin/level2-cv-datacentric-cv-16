@@ -195,7 +195,6 @@ visualize_csv.py
 visualize_json.py
 ```
 ### ufo_to_datumaro/
--
 ```
 bbox_to_polygon.py
 datumaro_to_ufo_v2.ipynb
@@ -205,8 +204,12 @@ ufo_to_datumaro_v2.ipynb
 utils.py
 utils_v2.py
 ```
+- ufo_to_datumaro.ipynb는 UFO 포맷의 json 파일을 datumaro 포맷으로 변경합니다.
+- datumaro_to_ufo.ipynb와 utils.py는 datumaro 포맷의 json 파일을 UFO 포맷으로 변경합니다.
+- ufo_done.py는 datumaro 포맷의 json 파일이 CVAT에서 export 되는 과정에서 잃어버리는 info 필드를, 기존과 동일하게 맞춰 이미지 크기를 매핑하고 이미지의 확장자를 입력합니다.
+- bbox_to_polygon.py 파일은 CVAT에서 어노테이션 작업을 하다가 실수로 polygon이 아닌 것으로 작업해 type이 bbox로 저장되었을 경우, polygon 타입으로 변경하고 포맷을 맞춰줍니다.
+  
 ### wandb_code/
-- 
 ```
 inference_wandb.py
 logger_epoch.py
@@ -217,6 +220,12 @@ train_wandb_onecycleLR.py
 train_wandb_sweep.py
 train_wandb_v2.py
 ```
+- train_wandb.py는 기존의 train.py를 수정하여 wandb로 시각화가 가능하게 수정한 버전입니다.
+- logger.py는 wanbd를 사용하기 위한 로거 파일입니다.
+- train_wandb_sweep.py와 sweep.yaml은 wandb sweep을 사용할 수 있게 해줍니다.
+- train_wandb_onecycleLR.py는 onecycle 스케줄러를 사용할 수 있도록 수정한 버전입니다. 
+- inference_wandb.py는 wandb resume 때문에 출력값이 달라진 train_wandb에 대응하여, pth 파일을 자유롭게 불러와 inference를 할 수 있도록 수정한 버전입니다.
+
 ### anno/
 - 학습에 사용되었던 수정된 annotation 파일들입니다. 학습에 사용된 데이터는 저작권 때문에 제공해드릴 수 없습니다.
 
