@@ -179,9 +179,7 @@ python google_image_translate_with_selenium.py
 
 ### check_bbox.ipynb, check_bbox_from csv.ipynb
 - streamlit 완성 전 임시로 사용한 간단한 시각화 파일입니다.
-```
 
-```
 
 ### crawling/crawling.ipynb
 - chrome 드라이버 설치 필수
