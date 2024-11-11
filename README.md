@@ -155,23 +155,25 @@ python ensemble.py --input_dir your_csv_dir
 # --single_iou 단일 iou 값
 # --single_vote 단일 vote 값
 ```
+
 ### data_clean_json.py
 - UFO format annotation 파일에서 transcription 기준으로 bbox를 삭제합니다.
 ```
 python data_clean_json.py
 ```
+
 ### create_annotation.py, create_annotation.ipynb
 - easyocr를 활용하여 입력으로 들어오는 이미지에 대해 annotation을 수행한 후 ufo format으로 변환합니다.
 ```
 python create_annotation.py
 ```
-<br/>
-<br/>
+
 ### google_image_translate_with_selenium.py
 - google translate 웹사이트에서 지원하는 image tranlsation을 활용하여 자동으로 이미지를 특정 언어로 번역하고 자동 annotation까지 수행한 후 바로 활용 가능한 데이터셋으로 만들어줍니다.
 ```
 python google_image_translate_with_selenium.py
 ```
+
 ### make_cord.ipynb
 - 네이버 CLOVA의 CORD 데이터셋을 hugging face에서 parquet 형태로 받아 이미지와 json 형태의 라벨을 추출하고 이를 ufo 포맷으로 변환합니다.
 
@@ -180,6 +182,7 @@ python google_image_translate_with_selenium.py
 ```
 
 ```
+
 ### crawling/crawling.ipynb
 - chrome 드라이버 설치 필수
 - google에서 4개의 나라별 영수증 (크리에이티브 라이선스 적용) 이미지를 다운받을 수 있습니다.
@@ -193,6 +196,7 @@ main.py
 visualize_csv.py
 visualize_json.py
 ```
+
 ### ufo_to_datumaro/
 ```
 bbox_to_polygon.py
