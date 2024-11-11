@@ -82,22 +82,41 @@ python inference.py
  ┃ ┣ 📂3
  ┃ ┣ 📂cord
  ┃ ┗ 📂crawl
+ ┃ ┃ ┗ 📜augmentation.ipynb
  ┣ 📂augmentation
  ┃ ┗ 📜augmentation.ipynb
  ┣ 📂crawling
  ┃ ┗ 📜realwhth.ipynb
  ┣ 📂streamlit
- ┃ ┣ 📜뭐뭐.py
- ┃ ┗ 📜뭐뭐.ipynb
+ ┃ ┣ 📜load_json.py
+ ┃ ┣ 📜main.py
+ ┃ ┣ 📜visualize_csv.py
+ ┃ ┗ 📜visualize_json.ipynb
  ┣ 📂ufo_to_datumaro
- ┃ ┣ 📜뭐뭐.py
- ┃ ┗ 📜뭐뭐.ipynb
+ ┃ ┣ 📜bbox_to_polygon.py
+ ┃ ┣ 📜datumaro_to_ufo_v2.ipynb
+ ┃ ┣ 📜ufo_done.py
+ ┃ ┣ 📜ufo_to_datumaro_v1.py
+ ┃ ┣ 📜ufo_to_datumaro_v2.py
+ ┃ ┣ 📜utils_v2.py
+ ┃ ┗ 📜utils.py
  ┣ 📂wandb_code
- ┃ ┣ 📜뭐뭐.py
- ┃ ┗ 📜뭐뭐.ipynb
+ ┃ ┣ 📜inference_wandb.py
+ ┃ ┣ 📜logger_epoch.py
+ ┃ ┣ 📜logger_sweep.py
+ ┃ ┣ 📜sweep.yaml
+ ┃ ┣ 📜train_wandb_onecycleLR.py
+ ┃ ┣ 📜train_wandb_sweep.py
+ ┃ ┣ 📜train_wandb_v2.py
+ ┃ ┗ 📜train_wandb.py
  ┣ 📜.gitignore
  ┣ 📜README.md
- ┗ 📜뭐뭐.py
+ ┣ 📜check_bbox_from_csv.ipynb
+ ┣ 📜check_bbox.ipynb
+ ┣ 📜create_annotation.ipynb
+ ┣ 📜create_annotation.py
+ ┣ 📜data_clean_json.py
+ ┣ 📜google_image_translate_with_selenium.py
 ```
 
 <br/>
