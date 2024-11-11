@@ -183,7 +183,7 @@ python google_image_translate_with_selenium.py
 
 ```
 
-### crawling/realwhth.ipynb
+### crawling/crawling.ipynb
 - chrome 드라이버 설치 필수
 - google에서 4개의 나라별 영수증 (크리에이티브 라이선스 적용) 이미지를 다운받을 수 있습니다.
 - 필터를 거친 영수증 이미지가 많지 않아 더보기/스크롤 등은 구현하지 않았습니다.
