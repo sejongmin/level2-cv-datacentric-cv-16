@@ -86,7 +86,7 @@ python inference.py
  ┣ 📂augmentation
  ┃ ┗ 📜augmentation.ipynb
  ┣ 📂crawling
- ┃ ┗ 📜realwhth.ipynb
+ ┃ ┗ 📜crawling.ipynb
  ┣ 📂streamlit
  ┃ ┣ 📜load_json.py
  ┃ ┣ 📜main.py
