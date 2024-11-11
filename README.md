@@ -138,7 +138,7 @@ python inference.py
 
 ```
 ### deteval.py
-- 
+- DetEVAL 평가방법에 맞게 점수를 계산합니다.
 ```
 
 ```
