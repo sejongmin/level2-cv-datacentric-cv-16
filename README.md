@@ -222,3 +222,5 @@ train_wandb_v2.py
 ### anno/
 - 학습에 사용되었던 수정된 annotation 파일들입니다. 학습에 사용된 데이터는 저작권 때문에 제공해드릴 수 없습니다.
 
+### anno/crawl/name.ipynb
+- crawling을 통해 얻은 추가 data의 file name/json을 수정합니다.
