@@ -82,7 +82,7 @@ python inference.py
  ┃ ┣ 📂3
  ┃ ┣ 📂cord
  ┃ ┗ 📂crawl
- ┃ ┃ ┗ 📜augmentation.ipynb
+ ┃ ┃ ┗ 📜name.ipynb
  ┣ 📂augmentation
  ┃ ┗ 📜augmentation.ipynb
  ┣ 📂crawling
