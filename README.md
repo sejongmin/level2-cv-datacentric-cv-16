@@ -173,10 +173,8 @@ python google_image_translate_with_selenium.py
 ```
 
 ### make_cord.ipynb
-- 
-```
+- 네이버 CLOVA의 CORD 데이터셋을 hugging face에서 parquet 형태로 받아 이미지와 json 형태의 라벨을 추출하고 이를 ufo 포맷으로 변환합니다.
 
-```
 ### check_bbox.ipynb, check_bbox_from csv.ipynb
 - streamlit 완성 전 임시로 사용한 간단한 시각화 파일입니다.
 ```
