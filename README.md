@@ -120,12 +120,12 @@ python inference.py
  ┗ 📜make_cord.ipynb
 ```
 
-<br/>
 ### train.py
 - 학습을 하기 위한 기본적인 코드입니다. OCR 중 객체 위치 탐지만을 학습합니다.
 ```
 python train.py
 ```
+
 ### inference.py
 - 학습된 객체 위치 탐지 모델으로 객체 위치를 추정합니다. 결과값으로 CSV파일이 저장됩니다. 
 ```
@@ -134,14 +134,10 @@ python inference.py
 
 ### dataset.py
 - dataset을 정의하며, 데이터에 적용될augmentation을 다룹니다.
-```
 
-```
 ### deteval.py
 - DetEVAL 평가방법에 맞게 점수를 계산합니다.
-```
 
-```
 ### ensemble.py
 - 추론을 통해 얻은 csv파일을 hard voting 방식으로 앙상블합니다. 
 ```
