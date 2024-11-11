@@ -117,6 +117,7 @@ python inference.py
  ┣ 📜create_annotation.py
  ┣ 📜data_clean_json.py
  ┣ 📜google_image_translate_with_selenium.py
+ ┗ 📜make_cord.ipynb
 ```
 
 <br/>
