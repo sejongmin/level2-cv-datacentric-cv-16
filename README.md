@@ -127,6 +127,8 @@ python inference.py
 ```
 python train.py
 ```
+<br/>
+
 ### inference.py
 - 학습된 객체 위치 탐지 모델으로 객체 위치를 추정합니다. 결과값으로 CSV파일이 저장됩니다. 
 ```
@@ -142,6 +144,7 @@ python inference.py
 ```
 
 ```
+<br/>
 ### ensemble.py
 - 추론을 통해 얻은 csv파일을 hard voting 방식으로 앙상블합니다. 
 ```
@@ -155,23 +158,25 @@ python ensemble.py --input_dir your_csv_dir
 # --single_iou 단일 iou 값
 # --single_vote 단일 vote 값
 ```
+<br/>
 ### data_clean_json.py
 - UFO format annotation 파일에서 transcription 기준으로 bbox를 삭제합니다.
 ```
 python data_clean_json.py
 ```
+<br/>
 ### create_annotation.py, create_annotation.ipynb
 - easyocr를 활용하여 입력으로 들어오는 이미지에 대해 annotation을 수행한 후 ufo format으로 변환합니다.
 ```
 python create_annotation.py
 ```
-
+<br/>
 ### google_image_translate_with_selenium.py
 - google translate 웹사이트에서 지원하는 image tranlsation을 활용하여 자동으로 이미지를 특정 언어로 번역하고 자동 annotation까지 수행한 후 바로 활용 가능한 데이터셋으로 만들어줍니다.
 ```
 python google_image_translate_with_selenium.py
 ```
-
+<br/>
 ### make_cord.ipynb
 - 네이버 CLOVA의 CORD 데이터셋을 hugging face에서 parquet 형태로 받아 이미지와 json 형태의 라벨을 추출하고 이를 ufo 포맷으로 변환합니다.
 
@@ -180,12 +185,13 @@ python google_image_translate_with_selenium.py
 ```
 
 ```
-
+<br/>
 ### crawling/crawling.ipynb
 - chrome 드라이버 설치 필수
 - google에서 4개의 나라별 영수증 (크리에이티브 라이선스 적용) 이미지를 다운받을 수 있습니다.
 - 필터를 거친 영수증 이미지가 많지 않아 더보기/스크롤 등은 구현하지 않았습니다.
 
+<br/>
 ### streamlit/
 - streamlit을 활용하여 데이터 및 모델 출력물에 대해 시각화할 수 있습니다.
 ```
@@ -194,6 +200,7 @@ main.py
 visualize_csv.py
 visualize_json.py
 ```
+<br/>
 ### ufo_to_datumaro/
 ```
 bbox_to_polygon.py
@@ -208,7 +215,8 @@ utils_v2.py
 - datumaro_to_ufo.ipynb와 utils.py는 datumaro 포맷의 json 파일을 UFO 포맷으로 변경합니다.
 - ufo_done.py는 datumaro 포맷의 json 파일이 CVAT에서 export 되는 과정에서 잃어버리는 info 필드를, 기존과 동일하게 맞춰 이미지 크기를 매핑하고 이미지의 확장자를 입력합니다.
 - bbox_to_polygon.py 파일은 CVAT에서 어노테이션 작업을 하다가 실수로 polygon이 아닌 것으로 작업해 type이 bbox로 저장되었을 경우, polygon 타입으로 변경하고 포맷을 맞춰줍니다.
-  
+
+<br/>  
 ### wandb_code/
 ```
 inference_wandb.py
@@ -226,8 +234,10 @@ train_wandb_v2.py
 - train_wandb_onecycleLR.py는 onecycle 스케줄러를 사용할 수 있도록 수정한 버전입니다. 
 - inference_wandb.py는 wandb resume 때문에 출력값이 달라진 train_wandb에 대응하여, pth 파일을 자유롭게 불러와 inference를 할 수 있도록 수정한 버전입니다.
 
+<br/>
 ### anno/
 - 학습에 사용되었던 수정된 annotation 파일들입니다. 학습에 사용된 데이터는 저작권 때문에 제공해드릴 수 없습니다.
 
+<br/>
 ### anno/crawl/name.ipynb
 - crawling을 통해 얻은 추가 data의 file name/json을 수정합니다.
