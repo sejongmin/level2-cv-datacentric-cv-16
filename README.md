@@ -228,3 +228,9 @@ train_wandb_v2.py
 
 ### anno/crawl/name.ipynb
 - crawling을 통해 얻은 추가 data의 file name/json을 수정합니다.
+
+## 🔗 Reference
+### [📎 Data-Centric Notion](https://spurious-podium-492.notion.site/OCR-6d6f7e6d334242f98d2a1ff7f46c83c5?pvs=74)
+### [📎 Wrapup Report](https://drive.google.com/file/d/11WdMQ8cejhdryKXWZoRrKMhJ09duKp3k/view?usp=drive_link)
+
+<br>
